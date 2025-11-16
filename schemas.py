@@ -12,7 +12,7 @@ Model name is converted to lowercase for the collection name:
 """
 
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import Optional, List
 
 # Example schemas (replace with your own):
 
@@ -38,11 +38,30 @@ class Product(BaseModel):
     category: str = Field(..., description="Product category")
     in_stock: bool = Field(True, description="Whether product is in stock")
 
-# Add your own schemas here:
-# --------------------------------------------------
+# Real Estate Property schema
+class GeoLocation(BaseModel):
+    lat: float = Field(..., description="Latitude")
+    lng: float = Field(..., description="Longitude")
 
-# Note: The Flames database viewer will automatically:
-# 1. Read these schemas from GET /schema endpoint
-# 2. Use them for document validation when creating/editing
-# 3. Handle all database operations (CRUD) directly
-# 4. You don't need to create any database endpoints!
+class Property(BaseModel):
+    """
+    Real estate property schema
+    Collection name: "property"
+    """
+    title: str = Field(..., description="Listing title")
+    address: str = Field(..., description="Street address")
+    city: str = Field(..., description="City")
+    country: str = Field(..., description="Country")
+    price: float = Field(..., ge=0, description="Price in USD")
+    bedrooms: int = Field(..., ge=0)
+    bathrooms: int = Field(..., ge=0)
+    area: float = Field(..., ge=0, description="Area in sqft")
+    type: str = Field(..., description="Property type e.g., Apartment, Villa")
+    status: str = Field("For Sale", description="For Sale, For Rent, Sold")
+    badges: List[str] = Field(default_factory=list, description="Badges like Hot, Furnished")
+    images: List[str] = Field(default_factory=list, description="Image URLs")
+    description: Optional[str] = Field(None, description="Detailed description")
+    amenities: List[str] = Field(default_factory=list)
+    location: Optional[GeoLocation] = None
+    floor_plans: List[str] = Field(default_factory=list, description="Floor plan image URLs")
+    featured: bool = Field(False)
